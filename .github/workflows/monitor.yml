@@ -1,0 +1,70 @@
+name: DocSentinel Monthly Land Monitor
+
+on:
+  schedule:
+    - cron: "0 3 1 * *"
+  workflow_dispatch:
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python libraries
+        run: |
+          pip install requests sentinelsat rasterio numpy python-dotenv
+          pip install jinja2 pdfkit opencv-python-headless matplotlib Pillow
+          pip install resend overpy
+
+      - name: Install wkhtmltopdf
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y wkhtmltopdf
+
+      - name: Create .env file
+        run: |
+          echo "CDSE_USERNAME=${{ secrets.CDSE_USERNAME }}" >> .env
+          echo "CDSE_PASSWORD=${{ secrets.CDSE_PASSWORD }}" >> .env
+          echo "RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}" >> .env
+
+      - name: Download Sentinel-2 bands
+        run: python download_bands.py
+
+      - name: Calculate NDVI and detect changes
+        run: python calculate_ndvi.py
+
+      - name: Fetch NASA GIBS basemap
+        run: python fetch_gibs.py
+
+      - name: Fetch OSM land-use context
+        run: python fetch_osm.py
+
+      - name: Generate HTML and PDF report
+        run: python generate_report.py
+        env:
+          WKHTMLTOPDF_PATH: /usr/bin/wkhtmltopdf
+
+      - name: Send report via Resend
+        run: python send_report.py
+
+      - name: Upload report artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: docsentinel-report-${{ github.run_number }}
+          path: |
+            output/report.html
+            output/report.pdf
+            output/ndvi_t1_map.png
+            output/loss_contours.png
+            output/true_color.png
+          retention-days: 30
