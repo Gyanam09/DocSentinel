@@ -1,21 +1,26 @@
 import os
 from datetime import date
 from jinja2 import Environment, FileSystemLoader
+from fetch_gibs import fetch_gibs_thumbnail
 
-# ─── Report data — pulled from calculate_ndvi.py results ────────────────
-# In production these values will be passed in dynamically.
-# For now we use the values from our last NDVI run.
+# ─── Fetch fresh true-color image from NASA GIBS ─────────────────────────
+BBOX = (23.15, 77.35, 23.35, 77.55)  # same AOI as download_bands.py
+print("Fetching NASA GIBS true-color image...")
+fetch_gibs_thumbnail(BBOX, output_path="output/true_color.png")
 
+# ─── Report data ──────────────────────────────────────────────────────────
 report_data = {
-    "scene_date":     "2026-05-25",
-    "generated_date": str(date.today()),
-    "aoi_name":       "Bhopal Test AOI",
-    "mean_ndvi":      0.198,
-    "loss_pct":       15.32,
-    "loss_patches":   6093,
-    "alert":          True,   # True if loss_pct > 1.0
-    "ndvi_map_path":  os.path.abspath("output/ndvi_t1_map.png"),
-    "loss_map_path":  os.path.abspath("output/loss_contours.png"),
+    "scene_date":        "2026-05-25",
+    "generated_date":    str(date.today()),
+    "aoi_name":          "Bhopal Test AOI",
+    "mean_ndvi":         0.198,
+    "loss_pct":          15.32,
+    "loss_patches":      6093,
+    "alert":             True,
+    "ndvi_map_path":     os.path.abspath("output/ndvi_t1_map.png"),
+    "loss_map_path":     os.path.abspath("output/loss_contours.png"),
+    "true_color_path":   os.path.abspath("output/true_color.png"),  # NEW
+    "osm_land_use":      None,   # None = OSM unavailable, report handles gracefully
 }
 
 # ─── Render HTML from Jinja2 template ───────────────────────────────────

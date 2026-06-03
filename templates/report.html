@@ -1,79 +1,646 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <style>
-    body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 24px; color: #1a1a1a; }
-    .header { border-bottom: 3px solid {{ "#c0392b" if alert else "#27ae60" }}; padding-bottom: 16px; margin-bottom: 24px; }
-    .alert-badge { display: inline-block; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: bold; background: {{ "#fdecea" if alert else "#eafaf1" }}; color: {{ "#c0392b" if alert else "#27ae60" }}; margin-bottom: 12px; }
-    h1 { font-size: 22px; margin: 8px 0 4px; }
-    .subtitle { color: #666; font-size: 14px; }
-    .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 24px 0; }
-    .metric { background: #f8f8f8; border-radius: 8px; padding: 16px; text-align: center; }
-    .metric-value { font-size: 28px; font-weight: bold; color: #1a1a1a; }
-    .metric-label { font-size: 12px; color: #888; margin-top: 4px; }
-    .section-title { font-size: 15px; font-weight: bold; margin: 24px 0 12px; border-left: 4px solid #2980b9; padding-left: 10px; }
-    .map-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
-    .map-box { border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; }
-    .map-box img { width: 100%; display: block; }
-    .map-label { font-size: 12px; color: #666; padding: 8px 10px; background: #fafafa; text-align: center; }
-    .footer { border-top: 1px solid #e0e0e0; padding-top: 16px; font-size: 12px; color: #999; margin-top: 32px; }
-    .status-ok { color: #27ae60; font-weight: bold; }
-    .status-alert { color: #c0392b; font-weight: bold; }
-  </style>
+    <meta charset="UTF-8">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #080f1a;
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+
+        /* ── TOP BANNER ── */
+        .top-bar {
+            background: linear-gradient(90deg, #0a1628 0%, #0d2137 50%, #0a1628 100%);
+            border-bottom: 1px solid #1e3a5f;
+            padding: 10px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .top-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .orbit-icon {
+            width: 32px;
+            height: 32px;
+            border: 2px solid #38bdf8;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .orbit-icon::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #38bdf8;
+            border-radius: 50%;
+        }
+
+        .brand {
+            font-family: 'Space Mono', monospace;
+            font-size: 13px;
+            color: #38bdf8;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .top-bar-right {
+            font-size: 11px;
+            color: #4a6fa5;
+            font-family: 'Space Mono', monospace;
+            letter-spacing: 1px;
+        }
+
+        /* ── HERO ── */
+        .hero {
+            background: linear-gradient(180deg, #0d2137 0%, #080f1a 100%);
+            border-bottom: 1px solid #1e3a5f;
+            padding: 40px 40px 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.06) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .alert-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .alert-chip.critical {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #f87171;
+        }
+
+        .alert-chip.ok {
+            background: rgba(34, 197, 94, 0.12);
+            border: 1px solid rgba(34, 197, 94, 0.35);
+            color: #4ade80;
+        }
+
+        .alert-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .alert-dot.critical {
+            background: #ef4444;
+            box-shadow: 0 0 6px #ef4444;
+        }
+
+        .alert-dot.ok {
+            background: #22c55e;
+            box-shadow: 0 0 6px #22c55e;
+        }
+
+        .hero-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #f1f5f9;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+
+        .hero-title span {
+            color: #38bdf8;
+        }
+
+        .hero-meta {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .meta-label {
+            font-size: 10px;
+            color: #4a6fa5;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .meta-val {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        /* ── GRID LAYOUT ── */
+        .main {
+            padding: 32px 40px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            margin-top: 32px;
+        }
+
+        .section-header:first-child {
+            margin-top: 0;
+        }
+
+        .section-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, #1e3a5f, transparent);
+        }
+
+        .section-label {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #38bdf8;
+            font-family: 'Space Mono', monospace;
+            white-space: nowrap;
+        }
+
+        /* ── METRIC CARDS ── */
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #0d2137 0%, #0a1a2e 100%);
+            border: 1px solid #1e3a5f;
+            border-radius: 10px;
+            padding: 18px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+        }
+
+        .metric-card.neutral::before {
+            background: linear-gradient(90deg, #38bdf8, transparent);
+        }
+
+        .metric-card.danger::before {
+            background: linear-gradient(90deg, #ef4444, transparent);
+        }
+
+        .metric-card.ok::before {
+            background: linear-gradient(90deg, #22c55e, transparent);
+        }
+
+        .metric-card.info::before {
+            background: linear-gradient(90deg, #a78bfa, transparent);
+        }
+
+        .metric-top {
+            font-size: 10px;
+            color: #4a6fa5;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 10px;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -1px;
+            line-height: 1;
+        }
+
+        .metric-value.neutral {
+            color: #38bdf8;
+        }
+
+        .metric-value.danger {
+            color: #f87171;
+        }
+
+        .metric-value.ok {
+            color: #4ade80;
+        }
+
+        .metric-value.purple {
+            color: #c4b5fd;
+        }
+
+        .metric-sub {
+            font-size: 11px;
+            color: #4a6fa5;
+            margin-top: 6px;
+        }
+
+        /* ── MAP PANELS ── */
+        .map-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .map-panel {
+            background: #0a1628;
+            border: 1px solid #1e3a5f;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .map-panel img {
+            width: 100%;
+            display: block;
+            aspect-ratio: 1;
+            object-fit: cover;
+        }
+
+        .map-footer {
+            padding: 9px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid #1e3a5f;
+            background: #080f1a;
+        }
+
+        .map-footer-label {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .map-footer-src {
+            font-size: 10px;
+            color: #1e3a5f;
+            font-family: 'Space Mono', monospace;
+        }
+
+        /* ── INTERPRETATION ── */
+        .interp-box {
+            background: linear-gradient(135deg, #0d2137, #0a1a2e);
+            border: 1px solid;
+            border-radius: 10px;
+            padding: 20px 24px;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .interp-box.critical {
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .interp-box.ok {
+            border-color: rgba(34, 197, 94, 0.25);
+        }
+
+        .interp-icon {
+            font-size: 22px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .interp-title {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .interp-title.critical {
+            color: #f87171;
+        }
+
+        .interp-title.ok {
+            color: #4ade80;
+        }
+
+        .interp-text {
+            font-size: 13px;
+            color: #94a3b8;
+            line-height: 1.7;
+        }
+
+        /* ── LAND USE TABLE ── */
+        .lu-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .lu-table th {
+            text-align: left;
+            padding: 8px 12px;
+            color: #4a6fa5;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 10px;
+            font-family: 'Space Mono', monospace;
+            border-bottom: 1px solid #1e3a5f;
+        }
+
+        .lu-table td {
+            padding: 9px 12px;
+            border-bottom: 1px solid #0d2137;
+            color: #94a3b8;
+        }
+
+        .lu-bar-wrap {
+            background: #0a1628;
+            border-radius: 3px;
+            height: 6px;
+            overflow: hidden;
+        }
+
+        .lu-bar {
+            height: 100%;
+            border-radius: 3px;
+            background: linear-gradient(90deg, #38bdf8, #818cf8);
+        }
+
+        .lu-pct {
+            color: #e2e8f0;
+            font-weight: 600;
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+        }
+
+        .lu-unavail {
+            font-size: 12px;
+            color: #4a6fa5;
+            padding: 16px 0;
+            font-style: italic;
+        }
+
+        /* ── FOOTER ── */
+        .report-footer {
+            margin-top: 40px;
+            padding: 20px 40px;
+            border-top: 1px solid #1e3a5f;
+            background: #080f1a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .footer-brand {
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            color: #1e3a5f;
+            letter-spacing: 1px;
+        }
+
+        .footer-sources {
+            font-size: 11px;
+            color: #1e3a5f;
+        }
+
+        .data-sources {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .ds-chip {
+            font-size: 10px;
+            padding: 3px 9px;
+            border-radius: 4px;
+            border: 1px solid #1e3a5f;
+            color: #4a6fa5;
+            font-family: 'Space Mono', monospace;
+        }
+    </style>
 </head>
+
 <body>
 
-  <div class="header">
-    <div class="alert-badge">
-      {{ "⚠ ALERT: Critical Canopy Loss Detected" if alert else "✓ No Significant Change Detected" }}
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div class="top-bar-left">
+            <div class="orbit-icon"></div>
+            <span class="brand">DocSentinel</span>
+        </div>
+        <div class="top-bar-right">AUTOMATED LAND INTELLIGENCE PLATFORM · REPORT v1.0</div>
     </div>
-    <h1>DocSentinel Land Monitoring Report</h1>
-    <div class="subtitle">Scene date: {{ scene_date }} &nbsp;|&nbsp; Generated: {{ generated_date }} &nbsp;|&nbsp; AOI: {{ aoi_name }}</div>
-  </div>
 
-  <div class="metrics">
-    <div class="metric">
-      <div class="metric-value">{{ "%.3f"|format(mean_ndvi) }}</div>
-      <div class="metric-label">Mean NDVI</div>
+    <!-- HERO -->
+    <div class="hero">
+        <div class="alert-chip {{ 'critical' if alert else 'ok' }}">
+            <div class="alert-dot {{ 'critical' if alert else 'ok' }}"></div>
+            {{ "CRITICAL ALERT — CANOPY LOSS DETECTED" if alert else "STATUS NOMINAL — NO CHANGE DETECTED" }}
+        </div>
+        <div class="hero-title">Land Monitoring <span>Report</span></div>
+        <div class="data-sources">
+            <span class="ds-chip">ESA SENTINEL-2</span>
+            <span class="ds-chip">NASA MODIS / GIBS</span>
+            <span class="ds-chip">USGS LANDSAT</span>
+            <span class="ds-chip">OSM OVERPASS</span>
+            <span class="ds-chip">NDVI ANALYSIS</span>
+        </div>
+        <div class="hero-meta">
+            <div class="meta-item">
+                <span class="meta-label">Area of Interest</span>
+                <span class="meta-val">{{ aoi_name }}</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Scene Date</span>
+                <span class="meta-val">{{ scene_date }}</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Report Generated</span>
+                <span class="meta-val">{{ generated_date }}</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Resolution</span>
+                <span class="meta-val">10m / pixel</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Data Source</span>
+                <span class="meta-val">Sentinel-2 L2A</span>
+            </div>
+        </div>
     </div>
-    <div class="metric">
-      <div class="metric-value {{ 'status-alert' if alert else 'status-ok' }}">{{ "%.1f"|format(loss_pct) }}%</div>
-      <div class="metric-label">Area with vegetation loss</div>
-    </div>
-    <div class="metric">
-      <div class="metric-value">{{ loss_patches }}</div>
-      <div class="metric-label">Loss patches detected</div>
-    </div>
-  </div>
 
-  <div class="section-title">NDVI Map — Current Scene</div>
-  <div class="map-grid">
-    <div class="map-box">
-      <img src="{{ ndvi_map_path }}" alt="NDVI map">
-      <div class="map-label">NDVI color map (red = bare, green = healthy)</div>
-    </div>
-    <div class="map-box">
-      <img src="{{ loss_map_path }}" alt="Loss contours">
-      <div class="map-label">Detected loss areas (red outlines)</div>
-    </div>
-  </div>
+    <!-- MAIN CONTENT -->
+    <div class="main">
 
-  <div class="section-title">Interpretation</div>
-  <p style="font-size:14px; line-height:1.7; color:#444;">
-    {% if alert %}
-    Significant vegetation loss was detected across <strong>{{ "%.1f"|format(loss_pct) }}%</strong> of the monitored area,
-    covering <strong>{{ loss_patches }}</strong> distinct patches. This may indicate deforestation, crop harvesting,
-    fire damage, or land clearing. Immediate ground verification is recommended.
-    {% else %}
-    No significant vegetation change was detected in this monitoring period. The area appears stable
-    with a mean NDVI of <strong>{{ "%.3f"|format(mean_ndvi) }}</strong>. Continue routine monitoring.
-    {% endif %}
-  </p>
+        <!-- METRICS -->
+        <div class="section-header">
+            <span class="section-label">Analysis Metrics</span>
+            <div class="section-line"></div>
+        </div>
+        <div class="metrics">
+            <div class="metric-card neutral">
+                <div class="metric-top">Mean NDVI Index</div>
+                <div class="metric-value neutral">{{ "%.3f"|format(mean_ndvi) }}</div>
+                <div class="metric-sub">Vegetation health score · −1 to +1 scale</div>
+            </div>
+            <div class="metric-card {{ 'danger' if alert else 'ok' }}">
+                <div class="metric-top">Vegetation Loss Area</div>
+                <div class="metric-value {{ 'danger' if alert else 'ok' }}">{{ "%.1f"|format(loss_pct) }}<span
+                        style="font-size:18px;">%</span></div>
+                <div class="metric-sub">Δ NDVI &lt; −0.15 threshold</div>
+            </div>
+            <div class="metric-card info">
+                <div class="metric-top">Loss Patches</div>
+                <div class="metric-value purple">{{ loss_patches }}</div>
+                <div class="metric-sub">Distinct anomaly regions detected</div>
+            </div>
+        </div>
 
-  <div class="footer">
-    DocSentinel Automated Land Monitoring &nbsp;|&nbsp; Powered by Sentinel-2 (ESA Copernicus) &nbsp;|&nbsp; 10m resolution
-  </div>
+        <!-- SATELLITE MAPS -->
+        <div class="section-header">
+            <span class="section-label">Satellite Imagery · {{ scene_date }}</span>
+            <div class="section-line"></div>
+        </div>
+        <div class="map-grid">
+            <div class="map-panel">
+                <img src="{{ true_color_path }}" alt="True color">
+                <div class="map-footer">
+                    <span class="map-footer-label">True Color Composite</span>
+                    <span class="map-footer-src">NASA MODIS</span>
+                </div>
+            </div>
+            <div class="map-panel">
+                <img src="{{ ndvi_map_path }}" alt="NDVI">
+                <div class="map-footer">
+                    <span class="map-footer-label">NDVI Vegetation Index</span>
+                    <span class="map-footer-src">SENTINEL-2 B04/B08</span>
+                </div>
+            </div>
+            <div class="map-panel">
+                <img src="{{ loss_map_path }}" alt="Loss contours">
+                <div class="map-footer">
+                    <span class="map-footer-label">Anomaly Detection Map</span>
+                    <span class="map-footer-src">OPENCV CONTOURS</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- INTERPRETATION -->
+        <div class="section-header">
+            <span class="section-label">Automated Interpretation</span>
+            <div class="section-line"></div>
+        </div>
+        <div class="interp-box {{ 'critical' if alert else 'ok' }}">
+            <div class="interp-icon">{{ "⚠" if alert else "✓" }}</div>
+            <div>
+                <div class="interp-title {{ 'critical' if alert else 'ok' }}">
+                    {{ "Significant Vegetation Loss Detected" if alert else "No Significant Change Detected" }}
+                </div>
+                <div class="interp-text">
+                    {% if alert %}
+                    Automated NDVI change detection identified significant vegetation loss across
+                    <strong style="color:#e2e8f0;">{{ "%.1f"|format(loss_pct) }}%</strong> of the monitored AOI,
+                    spanning <strong style="color:#e2e8f0;">{{ loss_patches }}</strong> distinct patches.
+                    This pattern is consistent with deforestation, land clearing, crop harvesting, or fire damage.
+                    The mean NDVI of <strong style="color:#e2e8f0;">{{ "%.3f"|format(mean_ndvi) }}</strong> indicates
+                    mixed vegetation density across the parcel. Immediate ground verification is recommended.
+                    {% else %}
+                    No significant vegetation change was detected during this monitoring period.
+                    The area appears stable with a mean NDVI of
+                    <strong style="color:#e2e8f0;">{{ "%.3f"|format(mean_ndvi) }}</strong>,
+                    indicating healthy vegetation cover. Routine monitoring continues as scheduled.
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- LAND USE -->
+        <div class="section-header">
+            <span class="section-label">Land-Use Classification · OpenStreetMap</span>
+            <div class="section-line"></div>
+        </div>
+
+        {% if osm_land_use %}
+        <table class="lu-table">
+            <thead>
+                <tr>
+                    <th>Land Type</th>
+                    <th>Coverage</th>
+                    <th style="width:50%;">Distribution</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for land_type, pct in osm_land_use.items() %}
+                <tr>
+                    <td>{{ land_type | capitalize }}</td>
+                    <td class="lu-pct">{{ pct }}%</td>
+                    <td>
+                        <div class="lu-bar-wrap">
+                            <div class="lu-bar" style="width:{{ pct }}%;"></div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="lu-unavail">Land-use data temporarily unavailable — OSM Overpass servers unreachable at time of
+            report generation.</div>
+        {% endif %}
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="report-footer">
+        <span class="footer-brand">DOCSENTINEL · AUTOMATED LAND INTELLIGENCE</span>
+        <span class="footer-sources">Sentinel-2 (ESA Copernicus) · NASA GIBS · USGS Landsat · OpenStreetMap</span>
+    </div>
 
 </body>
+
 </html>
