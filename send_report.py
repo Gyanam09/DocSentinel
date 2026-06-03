@@ -19,9 +19,71 @@ report_data = {
     "alert":         True,
 }
 
-# ─── Read the PDF as base64 attachment ───────────────────────────────────
+
+# ─── Read and compress PDF for email attachment ───────────────────────────
+from PIL import Image
+import io
+
 pdf_path = "output/report.pdf"
-with open(pdf_path, "rb") as f:
+
+# Compress the three map images before generating the final email PDF
+# Resend limit is 40MB — we resize maps to email-friendly dimensions
+def compress_image(path, max_width=800):
+    img = Image.open(path)
+    if img.width > max_width:
+        ratio = max_width / img.width
+        new_size = (max_width, int(img.height * ratio))
+        img = img.resize(new_size, Image.LANCZOS)
+    buf = io.BytesIO()
+    img.save(buf, format="JPEG", quality=60)
+    buf.seek(0)
+    return buf
+
+print("Compressing maps for email...")
+compress_image("output/ndvi_t1_map.png").read()  # pre-warm
+
+# Save compressed versions for the email PDF
+for fname, outname in [
+    ("output/ndvi_t1_map.png",    "output/ndvi_t1_map_sm.png"),
+    ("output/loss_contours.png",  "output/loss_contours_sm.png"),
+    ("output/true_color.png",     "output/true_color_sm.png"),
+]:
+    img = Image.open(fname)
+    if img.width > 800:
+        ratio = 800 / img.width
+        img = img.resize((800, int(img.height * ratio)), Image.LANCZOS)
+    img.save(outname, "JPEG", quality=60)
+
+print("Compressed maps saved.")
+
+# Regenerate PDF with compressed images for email
+import pdfkit, sys, os
+if sys.platform == "win32":
+    wk_path = r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
+else:
+    wk_path = os.environ.get("WKHTMLTOPDF_PATH", "/usr/bin/wkhtmltopdf")
+
+config = pdfkit.configuration(wkhtmltopdf=wk_path)
+options = {"enable-local-file-access": "", "quiet": ""}
+
+# Read report HTML and swap image paths to compressed versions
+with open("output/report.html", "r", encoding="utf-8") as f:
+    html = f.read()
+
+html_sm = html \
+    .replace("ndvi_t1_map.png",   "ndvi_t1_map_sm.png") \
+    .replace("loss_contours.png", "loss_contours_sm.png") \
+    .replace("true_color.png",    "true_color_sm.png")
+
+with open("output/report_email.html", "w", encoding="utf-8") as f:
+    f.write(html_sm)
+
+email_pdf = "output/report_email.pdf"
+pdfkit.from_file("output/report_email.html", email_pdf, configuration=config, options=options)
+print(f"Email PDF saved → {email_pdf}")
+
+# Attach the compressed PDF
+with open(email_pdf, "rb") as f:
     pdf_base64 = base64.b64encode(f.read()).decode("utf-8")
 
 # ─── Build email subject and intro ───────────────────────────────────────
