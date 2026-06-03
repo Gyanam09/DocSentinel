@@ -34,6 +34,15 @@ def compress_image(path, max_width=800):
         ratio = max_width / img.width
         new_size = (max_width, int(img.height * ratio))
         img = img.resize(new_size, Image.LANCZOS)
+    
+    # Handle transparent/RGBA modes by pasting onto a white background
+    if img.mode in ("RGBA", "LA") or (img.mode == "P" and "transparency" in img.info):
+        bg = Image.new("RGB", img.size, (255, 255, 255))
+        bg.paste(img, mask=img.convert("RGBA").split()[-1])
+        img = bg
+    elif img.mode != "RGB":
+        img = img.convert("RGB")
+        
     buf = io.BytesIO()
     img.save(buf, format="JPEG", quality=60)
     buf.seek(0)
@@ -48,11 +57,9 @@ for fname, outname in [
     ("output/loss_contours.png",  "output/loss_contours_sm.png"),
     ("output/true_color.png",     "output/true_color_sm.png"),
 ]:
-    img = Image.open(fname)
-    if img.width > 800:
-        ratio = 800 / img.width
-        img = img.resize((800, int(img.height * ratio)), Image.LANCZOS)
-    img.save(outname, "JPEG", quality=60)
+    buf = compress_image(fname)
+    with open(outname, "wb") as f:
+        f.write(buf.read())
 
 print("Compressed maps saved.")
 
@@ -80,7 +87,7 @@ with open("output/report_email.html", "w", encoding="utf-8") as f:
 
 email_pdf = "output/report_email.pdf"
 pdfkit.from_file("output/report_email.html", email_pdf, configuration=config, options=options)
-print(f"Email PDF saved → {email_pdf}")
+print(f"Email PDF saved -> {email_pdf}")
 
 # Attach the compressed PDF
 with open(email_pdf, "rb") as f:
