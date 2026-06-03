@@ -1,0 +1,6 @@
+.env
+bands/
+output/
+__pycache__/
+*.jp2
+*.tif
