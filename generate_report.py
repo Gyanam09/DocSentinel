@@ -41,9 +41,14 @@ print("Open it in your browser to preview.")
 # ─── Phase 5b: Export to PDF ────────────────────────────────────────────
 import pdfkit
 
-config = pdfkit.configuration(
-    wkhtmltopdf=r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
-)
+import sys
+
+if sys.platform == "win32":
+    wkhtmltopdf_path = r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
+else:
+    wkhtmltopdf_path = os.environ.get("WKHTMLTOPDF_PATH", "/usr/bin/wkhtmltopdf")
+
+config = pdfkit.configuration(wkhtmltopdf=wkhtmltopdf_path)
 
 options = {
     "enable-local-file-access": "",
