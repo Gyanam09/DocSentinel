@@ -77,7 +77,9 @@ def get_land_use(bbox):
 
 # ─── Test run ─────────────────────────────────────────────────────────────
 if __name__ == "__main__":
-    BBOX = (23.15, 77.35, 23.35, 77.55)
+    from config import load_config
+    cfg = load_config()
+    BBOX = cfg["bbox_tuple"]
 
     print("Querying OSM Overpass API...")
     land_use, validated = get_land_use(BBOX)

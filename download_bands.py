@@ -24,7 +24,10 @@ def get_token():
 
 # ─── Step 2: Search for a scene and get its ID ──────────────────────────
 def find_scene(token):
-    BBOX = (77.35, 23.15, 77.55, 23.35)
+    from config import load_config
+    cfg = load_config()
+    bbox = cfg["bbox_tuple"]
+    BBOX = (bbox[1], bbox[0], bbox[3], bbox[2])  # (min_lon, min_lat, max_lon, max_lat)
     min_lon, min_lat, max_lon, max_lat = BBOX
 
     wkt = (

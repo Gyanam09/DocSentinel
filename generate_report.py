@@ -2,25 +2,38 @@ import os
 from datetime import date
 from jinja2 import Environment, FileSystemLoader
 from fetch_gibs import fetch_gibs_thumbnail
+from config import load_config
+from fetch_location import fetch_location_name
+
+# ─── Load config first ───────────────────────────────────────────────────
+cfg = load_config()
+BBOX = cfg["bbox_tuple"]
 
 # ─── Fetch fresh true-color image from NASA GIBS ─────────────────────────
-BBOX = (23.15, 77.35, 23.35, 77.55)  # same AOI as download_bands.py
 print("Fetching NASA GIBS true-color image...")
-fetch_gibs_thumbnail(BBOX, output_path="output/true_color.png")
+fetch_gibs_thumbnail(BBOX, cfg=cfg, output_path="output/true_color.png")
+
+# ─── Auto-detect location name ───────────────────────────────────────────
+location_name, addr = fetch_location_name(cfg)
 
 # ─── Report data ──────────────────────────────────────────────────────────
 report_data = {
-    "scene_date":        "2026-05-25",
-    "generated_date":    str(date.today()),
-    "aoi_name":          "Bhopal Test AOI",
-    "mean_ndvi":         0.198,
-    "loss_pct":          15.32,
-    "loss_patches":      6093,
-    "alert":             True,
-    "ndvi_map_path":     os.path.abspath("output/ndvi_t1_map.png"),
-    "loss_map_path":     os.path.abspath("output/loss_contours.png"),
-    "true_color_path":   os.path.abspath("output/true_color.png"),  # NEW
-    "osm_land_use":      None,   # None = OSM unavailable, report handles gracefully
+    "scene_date":       cfg["scene_date"],
+    "generated_date":   str(date.today()),
+    "aoi_name":         location_name,
+    "country":          addr.get("country", ""),
+    "state":            addr.get("state", ""),
+    "mean_ndvi":        0.198,
+    "loss_pct":         15.32,
+    "loss_patches":     6093,
+    "alert":            True,
+    "ndvi_map_path":    os.path.abspath("output/ndvi_t1_map.png"),
+    "loss_map_path":    os.path.abspath("output/loss_contours.png"),
+    "true_color_path":  os.path.abspath("output/true_color.png"),
+    "elevation_path":   os.path.abspath("output/elevation_map.png"),
+    "fire_map_path":    os.path.abspath("output/fire_map.png"),
+    "osm_land_use":     None,
+    "bbox":             cfg["bbox"],
 }
 
 # ─── Render HTML from Jinja2 template ───────────────────────────────────

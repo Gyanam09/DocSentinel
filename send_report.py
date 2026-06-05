@@ -9,10 +9,13 @@ load_dotenv()
 resend.api_key = os.getenv("RESEND_API_KEY")
 
 # ─── Report data — in production this comes from calculate_ndvi.py ───────
+from config import load_config
+cfg = load_config()
+
 report_data = {
-    "client_email":  "aisebanai@gmail.com",  # replace with real client email
-    "aoi_name":      "Bhopal Test AOI",
-    "scene_date":    "2026-05-25",
+    "client_email":  cfg["client_email"],
+    "aoi_name":      cfg.get("aoi_name", "AOI"),
+    "scene_date":    cfg["scene_date"],
     "mean_ndvi":     0.198,
     "loss_pct":      15.32,
     "loss_patches":  6093,

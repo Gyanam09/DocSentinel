@@ -1,3 +1,4 @@
+from config import load_config
 import requests
 import os
 from PIL import Image
@@ -14,7 +15,10 @@ def deg2num(lat, lon, zoom):
     return x, y
 
 
-def fetch_gibs_thumbnail(bbox, output_path="output/true_color.png", zoom=9):
+def fetch_gibs_thumbnail(bbox, cfg=None, output_path="output/true_color.png", zoom=9):
+    if cfg is None:
+        from config import load_config
+        cfg = load_config()
     """
     Fetch a true-color MODIS composite tile from NASA GIBS.
     bbox: (min_lat, min_lon, max_lat, max_lon)
@@ -38,11 +42,12 @@ def fetch_gibs_thumbnail(bbox, output_path="output/true_color.png", zoom=9):
 
     # NASA GIBS WMTS — zoom level in URL must match request zoom
     # GoogleMapsCompatible_Level9 = max zoom 9 for this layer
+    scene_year_month = cfg["scene_date"][:7]  # e.g. "2026-05"
     def make_url(tx, ty, tz):
         return (
             f"https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/"
             f"MODIS_Terra_CorrectedReflectance_TrueColor/default/"
-            f"2026-05-01/"  # use start of month — more likely to have data
+            f"{scene_year_month}-01/"
             f"GoogleMapsCompatible_Level9/{tz}/{ty}/{tx}.jpg"
         )
 
@@ -72,8 +77,7 @@ def fetch_gibs_thumbnail(bbox, output_path="output/true_color.png", zoom=9):
 
 # ─── Test run ─────────────────────────────────────────────────────────────
 if __name__ == "__main__":
-    BBOX = (23.15, 77.35, 23.35, 77.55)  # Bhopal AOI
-
-    print("Fetching NASA GIBS true-color imagery...")
-    path = fetch_gibs_thumbnail(BBOX)
+    cfg = load_config()
+    BBOX = cfg["bbox_tuple"]
+    path = fetch_gibs_thumbnail(BBOX, cfg=cfg)
     print(f"Done — open {path} to preview")
