@@ -157,7 +157,7 @@ def render_fire_map(fires, cfg, output_path="output/fire_map.png"):
     plt.savefig(output_path, dpi=150, bbox_inches="tight",
                 facecolor="#0a1628", edgecolor="none")
     plt.close()
-    print(f"Saved → {output_path}")
+    print(f"Saved -> {output_path}")
     return output_path
 
 

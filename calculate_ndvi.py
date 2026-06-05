@@ -45,7 +45,7 @@ ndvi_profile.update(dtype="float32", count=1, driver="GTiff")
 with rasterio.open("output/ndvi_t1.tif", "w", **ndvi_profile) as dst:
     dst.write(ndvi, 1)
 
-print("Saved → output/ndvi_t1.tif")
+print("Saved -> output/ndvi_t1.tif")
 
 
 # ─── Step 4: Visualize NDVI as a color map ──────────────────────────────
@@ -63,7 +63,7 @@ plt.tight_layout()
 plt.savefig("output/ndvi_t1_map.png", dpi=150)
 plt.close()
 
-print("Saved → output/ndvi_t1_map.png")
+print("Saved -> output/ndvi_t1_map.png")
 
 
 # ─── Step 5: Simulate T0 (last month) for change detection ──────────────
@@ -107,7 +107,7 @@ cv2.drawContours(display_img, significant, -1, (0, 0, 255), 2)  # red outlines
 print(f"Significant loss patches: {len(significant)}")
 
 cv2.imwrite("output/loss_contours.png", display_img)
-print("Saved → output/loss_contours.png")
+print("Saved -> output/loss_contours.png")
 
 
 # ─── Step 8: Print final summary ────────────────────────────────────────

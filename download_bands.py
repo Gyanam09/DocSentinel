@@ -153,7 +153,7 @@ def download_band(scene_id, safe_name, granule_name, band_filename, band_label, 
             f.write(chunk)
 
     size_mb = os.path.getsize(filepath) / (1024 * 1024)
-    print(f"Downloaded {band_label} → {filepath} ({size_mb:.1f} MB)")
+    print(f"Downloaded {band_label} -> {filepath} ({size_mb:.1f} MB)")
     return filepath
 
 

@@ -10,5 +10,6 @@
     "client_email": "aisebanai@gmail.com",
     "ndvi_loss_threshold": -0.15,
     "cloud_cover_max": 5.0,
-    "zoom_level": 9
+    "zoom_level": 9,
+    "elevation_grid_size": 50
 }

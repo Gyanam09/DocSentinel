@@ -61,18 +61,18 @@ def fetch_gibs_thumbnail(bbox, cfg=None, output_path="output/true_color.png", zo
             print(f"  Requesting: {url}")
             try:
                 r = requests.get(url, timeout=10)
-                print(f"  → HTTP {r.status_code}")
+                print(f"  -> HTTP {r.status_code}")
                 if r.status_code == 200:
                     tile_img = Image.open(BytesIO(r.content))
                     canvas.paste(tile_img, (col_i * tile_size, row_i * tile_size))
                     success += 1
             except Exception as e:
-                print(f"  → Error: {e}")
+                print(f"  -> Error: {e}")
 
     os.makedirs("output", exist_ok=True)
     canvas.save(output_path)
     print(f"\n{success}/{cols*rows} tiles fetched successfully")
-    print(f"Saved → {output_path}")
+    print(f"Saved -> {output_path}")
     return output_path
 
 # ─── Test run ─────────────────────────────────────────────────────────────

@@ -211,9 +211,22 @@
             background: linear-gradient(90deg, #1e3a5f, transparent);
         }
 
+        /* ── METRIC CARDS ── */
         .metrics {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .metrics-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .metrics-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
             gap: 10px;
         }
 
@@ -251,6 +264,14 @@
             background: linear-gradient(90deg, #a78bfa, transparent);
         }
 
+        .mc-amber::before {
+            background: linear-gradient(90deg, #fbbf24, transparent);
+        }
+
+        .mc-cyan::before {
+            background: linear-gradient(90deg, #22d3ee, transparent);
+        }
+
         .mc-lbl {
             font-size: 10px;
             color: #4a6fa5;
@@ -283,20 +304,88 @@
             color: #c4b5fd;
         }
 
+        .mc-amber .mc-val {
+            color: #fbbf24;
+        }
+
+        .mc-cyan .mc-val {
+            color: #22d3ee;
+        }
+
         .mc-sub {
             font-size: 11px;
             color: #4a6fa5;
             margin-top: 5px;
         }
 
-        /* 3-column map grid */
+        /* ── SCORE CARD ── */
+        .score-bar-bg {
+            height: 4px;
+            background: #0a1628;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .score-bar-fill {
+            height: 100%;
+            border-radius: 2px;
+        }
+
+        /* ── OVERALL SCORE ── */
+        .overall-card {
+            background: linear-gradient(135deg, #0d2137, #0a1a2e);
+            border: 1px solid #1e3a5f;
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 10px;
+        }
+
+        .overall-ring {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            flex-shrink: 0;
+        }
+
+        .overall-ring svg {
+            transform: rotate(-90deg);
+        }
+
+        .overall-num {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .overall-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 4px;
+        }
+
+        .overall-sub {
+            font-size: 12px;
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        /* ── MAP PANELS ── */
         .map-grid-3 {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
         }
 
-        /* 2-column map grid */
         .map-grid-2 {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -342,6 +431,7 @@
             font-family: 'Space Mono', monospace;
         }
 
+        /* ── INTERP BOX ── */
         .interp {
             background: linear-gradient(135deg, #0d2137, #0a1a2e);
             border: 1px solid;
@@ -385,13 +475,61 @@
             line-height: 1.7;
         }
 
-        .lu-table {
+        /* ── RISK ITEMS ── */
+        .risk-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .risk-item {
+            background: linear-gradient(135deg, #0d2137, #0a1a2e);
+            border: 1px solid #1e3a5f;
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .risk-icon {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .risk-name {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            color: #4a6fa5;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .risk-level {
+            font-size: 15px;
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .rl-high {
+            color: #f87171;
+        }
+
+        .rl-moderate {
+            color: #fbbf24;
+        }
+
+        .rl-low {
+            color: #4ade80;
+        }
+
+        /* ── TABLE ── */
+        .data-table {
             width: 100%;
             border-collapse: collapse;
             font-size: 12px;
         }
 
-        .lu-table th {
+        .data-table th {
             text-align: left;
             padding: 8px 12px;
             color: #4a6fa5;
@@ -403,39 +541,135 @@
             border-bottom: 1px solid #1e3a5f;
         }
 
-        .lu-table td {
+        .data-table td {
             padding: 8px 12px;
             border-bottom: 1px solid #0d2137;
             color: #94a3b8;
         }
 
-        .lu-bar-wrap {
+        .data-table td:first-child {
+            color: #e2e8f0;
+        }
+
+        /* ── PILLS ── */
+        .pill {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .pill-green {
+            background: rgba(34, 197, 94, .1);
+            color: #4ade80;
+        }
+
+        .pill-red {
+            background: rgba(239, 68, 68, .1);
+            color: #f87171;
+        }
+
+        .pill-orange {
+            background: rgba(251, 191, 36, .1);
+            color: #fbbf24;
+        }
+
+        .pill-blue {
+            background: rgba(56, 189, 248, .1);
+            color: #38bdf8;
+        }
+
+        /* ── BAR ── */
+        .bar-wrap {
             background: #0a1628;
             border-radius: 3px;
             height: 6px;
             overflow: hidden;
         }
 
-        .lu-bar {
+        .bar-fill {
             height: 100%;
             border-radius: 3px;
             background: linear-gradient(90deg, #38bdf8, #818cf8);
         }
 
-        .lu-pct {
-            color: #e2e8f0;
-            font-weight: 600;
-            font-family: 'Space Mono', monospace;
-            font-size: 11px;
+        /* ── CROPS ── */
+        .crops {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
-        .lu-na {
+        .crop-tag {
+            background: linear-gradient(135deg, #0d2137, #0a1a2e);
+            border: 1px solid #1e3a5f;
+            border-radius: 8px;
+            padding: 8px 14px;
             font-size: 12px;
-            color: #4a6fa5;
-            padding: 12px 0;
-            font-style: italic;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
+        /* ── INVESTMENT ── */
+        .inv-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .inv-col {
+            background: linear-gradient(135deg, #0d2137, #0a1a2e);
+            border: 1px solid #1e3a5f;
+            border-radius: 10px;
+            padding: 16px;
+        }
+
+        .inv-col-title {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .inv-col-title.pros {
+            color: #4ade80;
+        }
+
+        .inv-col-title.cons {
+            color: #f87171;
+        }
+
+        .inv-item {
+            font-size: 12px;
+            color: #94a3b8;
+            padding: 5px 0;
+            border-bottom: 1px solid #0d2137;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .inv-item::before {
+            content: '';
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .pros .inv-item::before {
+            background: #22c55e;
+        }
+
+        .cons .inv-item::before {
+            background: #ef4444;
+        }
+
+        /* ── COORD BOX ── */
         .coord-box {
             background: #0d2137;
             border: 1px solid #1e3a5f;
@@ -466,6 +700,46 @@
             font-family: 'Space Mono', monospace;
         }
 
+        /* ── LU TABLE ── */
+        .lu-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .lu-table th {
+            text-align: left;
+            padding: 8px 12px;
+            color: #4a6fa5;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 10px;
+            font-family: 'Space Mono', monospace;
+            border-bottom: 1px solid #1e3a5f;
+        }
+
+        .lu-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #0d2137;
+            color: #94a3b8;
+        }
+
+        .lu-pct {
+            color: #e2e8f0;
+            font-weight: 600;
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+        }
+
+        .lu-na {
+            font-size: 12px;
+            color: #4a6fa5;
+            padding: 12px 0;
+            font-style: italic;
+        }
+
+        /* ── FOOTER ── */
         .footer {
             margin-top: 32px;
             padding: 16px 32px;
@@ -493,6 +767,24 @@
 </head>
 
 <body>
+    <!-- NAVIGATION BAR -->
+    <div
+        style="background:#050c18; border-bottom:1px solid #0d2137; padding:8px 32px; display:flex; align-items:center; justify-content:space-between;">
+        <div style="display:flex; align-items:center; gap:6px; font-size:11px; font-family:'Space Mono',monospace;">
+            <span style="color:#4a6fa5;">DOCSENTINEL</span>
+            <span style="color:#1e3a5f;">›</span>
+            <span style="color:#38bdf8;">ANALYSIS REPORT</span>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <a href="report.html"
+                style="font-size:11px; padding:5px 12px; border-radius:5px; border:1px solid #38bdf8; color:#38bdf8; text-decoration:none; font-family:'Space Mono',monospace; background:rgba(56,189,248,.1);">📊
+                REPORT</a>
+            <a href="terrain_3d.html"
+                style="font-size:11px; padding:5px 12px; border-radius:5px; border:1px solid #1e3a5f; color:#64748b; text-decoration:none; font-family:'Space Mono',monospace;"
+                onmouseover="this.style.borderColor='#38bdf8';this.style.color='#38bdf8'"
+                onmouseout="this.style.borderColor='#1e3a5f';this.style.color='#64748b'">🌄 3D TERRAIN</a>
+        </div>
+    </div>
 
     <!-- TOP BAR -->
     <div class="top-bar">
@@ -517,6 +809,8 @@
             <span class="ds-chip">NASA FIRMS</span>
             <span class="ds-chip">OSM OVERPASS</span>
             <span class="ds-chip">NOMINATIM</span>
+            <span class="ds-chip">OPEN-METEO</span>
+            <span class="ds-chip">SOILGRIDS v2</span>
         </div>
         <div class="hero-meta">
             <div class="meta-item"><span class="meta-lbl">Location</span><span class="meta-val">{{ aoi_name }}, {{
@@ -548,7 +842,7 @@
                     }}° E</span></div>
         </div>
 
-        <!-- METRICS -->
+        <!-- ANALYSIS METRICS -->
         <div class="sec-head"><span class="sec-lbl">Analysis Metrics</span>
             <div class="sec-line"></div>
         </div>
@@ -565,7 +859,7 @@
             </div>
             <div class="mc mc-purple">
                 <div class="mc-lbl">Loss Patches</div>
-                <div class="mc-val">{{ loss_patches }}</div>
+                <div class="mc-val">{{ "{:,}".format(loss_patches) }}</div>
                 <div class="mc-sub">Distinct anomaly regions</div>
             </div>
             <div class="mc mc-blue">
@@ -575,7 +869,7 @@
             </div>
         </div>
 
-        <!-- ROW 1: True color / NDVI / Loss -->
+        <!-- SATELLITE IMAGERY -->
         <div class="sec-head"><span class="sec-lbl">Satellite Imagery Panel · {{ scene_date }}</span>
             <div class="sec-line"></div>
         </div>
@@ -597,7 +891,7 @@
             </div>
         </div>
 
-        <!-- ROW 2: Elevation / Fire -->
+        <!-- TERRAIN & RISK LAYERS -->
         <div class="sec-head"><span class="sec-lbl">Terrain & Risk Layers</span>
             <div class="sec-line"></div>
         </div>
@@ -614,7 +908,74 @@
             </div>
         </div>
 
-        <!-- INTERPRETATION -->
+        <!-- LAND HEALTH SCORE -->
+        <div class="sec-head"><span class="sec-lbl">Land Intelligence Scores</span>
+            <div class="sec-line"></div>
+        </div>
+        <div class="overall-card">
+            <div class="overall-ring">
+                <svg width="80" height="80" viewBox="0 0 80 80">
+                    <circle cx="40" cy="40" r="32" fill="none" stroke="#0d2137" stroke-width="8" />
+                    <circle cx="40" cy="40" r="32" fill="none"
+                        stroke="{% if score_overall >= 70 %}#22c55e{% elif score_overall >= 45 %}#fbbf24{% else %}#ef4444{% endif %}"
+                        stroke-width="8" stroke-linecap="round"
+                        stroke-dasharray="{{ (score_overall / 100 * 201)|int }} 201" />
+                </svg>
+                <div class="overall-num"
+                    style="color:{% if score_overall >= 70 %}#4ade80{% elif score_overall >= 45 %}#fbbf24{% else %}#f87171{% endif %}">
+                    {{ score_overall }}</div>
+            </div>
+            <div>
+                <div class="overall-title">Overall Land Health Score</div>
+                <div class="overall-sub">
+                    Composite of vegetation, water availability, terrain stability, human disturbance, fire risk, and
+                    climate stress.
+                    {% if score_overall >= 70 %}Land parcel is in good health with no major risk factors.
+                    {% elif score_overall >= 45 %}Moderate concerns present — monitoring recommended.
+                    {% else %}Multiple risk factors detected — intervention recommended.{% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="metrics" style="margin-bottom:10px">
+            {% set subs = [
+            ("Vegetation", score_vegetation, "#22c55e"),
+            ("Water", score_water, "#38bdf8"),
+            ("Terrain", score_terrain, "#22d3ee"),
+            ("Disturbance", score_disturbance, "#a78bfa"),
+            ("Fire Risk", score_fire, "#fb923c"),
+            ("Climate", score_climate, "#f87171"),
+            ] %}
+            {% for name, val, color in subs[:4] %}
+            <div class="mc mc-blue" style="--bar-color:{{ color }}">
+                <div class="mc-lbl">{{ name }}</div>
+                <div class="mc-val"
+                    style="font-size:22px; color:{% if val >= 70 %}#4ade80{% elif val >= 45 %}#fbbf24{% else %}#f87171{% endif %}">
+                    {{ val }}<span style="font-size:12px;color:#4a6fa5">/100</span></div>
+                <div class="score-bar-bg">
+                    <div class="score-bar-fill"
+                        style="width:{{ val }}%;background:{% if val >= 70 %}#22c55e{% elif val >= 45 %}#fbbf24{% else %}#ef4444{% endif %}">
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="metrics-2" style="margin-bottom:0">
+            {% for name, val, color in subs[4:] %}
+            <div class="mc mc-blue">
+                <div class="mc-lbl">{{ name }}</div>
+                <div class="mc-val"
+                    style="font-size:22px; color:{% if val >= 70 %}#4ade80{% elif val >= 45 %}#fbbf24{% else %}#f87171{% endif %}">
+                    {{ val }}<span style="font-size:12px;color:#4a6fa5">/100</span></div>
+                <div class="score-bar-bg">
+                    <div class="score-bar-fill"
+                        style="width:{{ val }}%;background:{% if val >= 70 %}#22c55e{% elif val >= 45 %}#fbbf24{% else %}#ef4444{% endif %}">
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- AUTOMATED INTERPRETATION -->
         <div class="sec-head"><span class="sec-lbl">Automated Interpretation</span>
             <div class="sec-line"></div>
         </div>
@@ -627,57 +988,304 @@
                     {% if alert %}
                     Automated NDVI change detection identified significant vegetation loss across
                     <strong style="color:#e2e8f0">{{ "%.1f"|format(loss_pct) }}%</strong> of the monitored AOI
-                    spanning <strong style="color:#e2e8f0">{{ loss_patches }}</strong> distinct patches.
+                    spanning <strong style="color:#e2e8f0">{{ "{:,}".format(loss_patches) }}</strong> distinct patches.
                     Mean NDVI of <strong style="color:#e2e8f0">{{ "%.3f"|format(mean_ndvi) }}</strong> indicates mixed
-                    vegetation density. The terrain sits at an average elevation within the AOI boundary.
+                    vegetation density.
+                    The terrain sits at a mean elevation of <strong style="color:#e2e8f0">{{ elev_mean }}m ASL</strong>
+                    (range {{ elev_min }}–{{ elev_max }}m, avg slope {{ slope_avg }}°).
+                    Current conditions — <strong style="color:#e2e8f0">{{ temp }}°C, {{ humidity }}% humidity</strong> —
+                    against an annual rainfall of <strong style="color:#e2e8f0">{{ annual_rainfall }}mm</strong>.
+                    Soil is {{ soil_texture }} (pH {{ soil_ph }}, {{ soil_ph_class }}) with {{ soil_drainage|lower }}
+                    drainage.
                     Immediate ground verification is recommended for affected patches.
                     {% else %}
                     No significant vegetation change detected. Area stable with mean NDVI
-                    <strong style="color:#e2e8f0">{{ "%.3f"|format(mean_ndvi) }}</strong>. Routine monitoring continues.
+                    <strong style="color:#e2e8f0">{{ "%.3f"|format(mean_ndvi) }}</strong>.
+                    Terrain at {{ elev_mean }}m ASL, {{ soil_texture }} soil (pH {{ soil_ph }}).
+                    Annual rainfall {{ annual_rainfall }}mm supports current vegetation. Routine monitoring continues.
                     {% endif %}
                 </div>
             </div>
         </div>
 
-        <!-- LAND USE -->
-        <div class="sec-head"><span class="sec-lbl">Land-Use Classification · OpenStreetMap</span>
+        <!-- DISASTER RISK -->
+        <div class="sec-head"><span class="sec-lbl">Disaster Risk Assessment</span>
             <div class="sec-line"></div>
         </div>
-        {% if osm_land_use %}
-        <table class="lu-table">
-            <thead>
-                <tr>
-                    <th>Land Type</th>
-                    <th>Coverage</th>
-                    <th style="width:50%">Distribution</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for land_type, pct in osm_land_use.items() %}
-                <tr>
-                    <td>{{ land_type | capitalize }}</td>
-                    <td class="lu-pct">{{ pct }}%</td>
-                    <td>
-                        <div class="lu-bar-wrap">
-                            <div class="lu-bar" style="width:{{ pct }}%"></div>
-                        </div>
-                    </td>
-                </tr>
+        <div class="risk-grid">
+            <div class="risk-item">
+                <div class="risk-icon">🌊</div>
+                <div class="risk-name">Flood Risk</div>
+                <div class="risk-level rl-{{ flood_risk|lower }}">{{ flood_risk }}</div>
+            </div>
+            <div class="risk-item">
+                <div class="risk-icon">⛰</div>
+                <div class="risk-name">Landslide Risk</div>
+                <div class="risk-level rl-{{ landslide_risk|lower }}">{{ landslide_risk }}</div>
+            </div>
+            <div class="risk-item">
+                <div class="risk-icon">🔥</div>
+                <div class="risk-name">Fire Risk</div>
+                <div
+                    class="risk-level {% if score_fire < 45 %}rl-high{% elif score_fire < 70 %}rl-moderate{% else %}rl-low{% endif %}">
+                    {% if score_fire < 45 %}High{% elif score_fire < 70 %}Moderate{% else %}Low{% endif %} </div>
+                </div>
+                <div class="risk-item">
+                    <div class="risk-icon">☀</div>
+                    <div class="risk-name">Drought Risk</div>
+                    <div class="risk-level rl-{{ drought_risk|lower }}">{{ drought_risk }}</div>
+                </div>
+            </div>
+
+            <!-- WEATHER -->
+            <div class="sec-head"><span class="sec-lbl">Weather & Climate · Open-Meteo + NASA POWER</span>
+                <div class="sec-line"></div>
+            </div>
+            <div class="metrics" style="margin-bottom:10px">
+                <div class="mc mc-amber">
+                    <div class="mc-lbl">Temperature</div>
+                    <div class="mc-val">{{ temp }}°C</div>
+                    <div class="mc-sub">Current surface temp</div>
+                </div>
+                <div class="mc mc-blue">
+                    <div class="mc-lbl">Humidity</div>
+                    <div class="mc-val">{{ humidity }}%</div>
+                    <div class="mc-sub">Relative humidity</div>
+                </div>
+                <div class="mc mc-cyan">
+                    <div class="mc-lbl">Wind Speed</div>
+                    <div class="mc-val" style="font-size:22px">{{ wind_speed }}<span style="font-size:14px"> km/h</span>
+                    </div>
+                    <div class="mc-sub">At 10m height</div>
+                </div>
+                <div class="mc mc-purple">
+                    <div class="mc-lbl">Precipitation</div>
+                    <div class="mc-val" style="font-size:22px">{{ precipitation }}<span style="font-size:14px">
+                            mm</span></div>
+                    <div class="mc-sub">Current period</div>
+                </div>
+            </div>
+            <div class="metrics-3" style="margin-bottom:10px">
+                <div class="mc mc-blue">
+                    <div class="mc-lbl">Annual Rainfall</div>
+                    <div class="mc-val" style="font-size:22px">{{ annual_rainfall }}<span style="font-size:13px">
+                            mm</span></div>
+                    <div class="mc-sub">20-yr avg · {{ rainy_days }} rainy days/yr</div>
+                </div>
+                <div class="mc {{ 'mc-red' if temp_trend|float > 0 else 'mc-green' }}">
+                    <div class="mc-lbl">Temp Trend (20yr)</div>
+                    <div class="mc-val" style="font-size:22px">{{ '+' if temp_trend|float > 0 else '' }}{{ temp_trend
+                        }}°C</div>
+                    <div class="mc-sub">Climate warming signal</div>
+                </div>
+                <div class="mc {{ 'mc-green' if rain_trend_pct|float >= 0 else 'mc-red' }}">
+                    <div class="mc-lbl">Rainfall Trend</div>
+                    <div class="mc-val" style="font-size:22px">{{ '+' if rain_trend_pct|float > 0 else '' }}{{
+                        rain_trend_pct }}%</div>
+                    <div class="mc-sub">20-yr precipitation change</div>
+                </div>
+            </div>
+            <div class="metrics-2">
+                <div class="mc mc-amber">
+                    <div class="mc-lbl">Solar Irradiance</div>
+                    <div class="mc-val" style="font-size:22px">{{ solar_kwh }}<span style="font-size:13px">
+                            kWh/m²/day</span></div>
+                    <div class="mc-sub">NASA POWER · annual average</div>
+                </div>
+                <div class="mc mc-cyan">
+                    <div class="mc-lbl">Wind Energy Potential</div>
+                    <div class="mc-val" style="font-size:22px">{{ wind_ms }}<span style="font-size:13px"> m/s</span>
+                    </div>
+                    <div class="mc-sub">NASA POWER · 2m height annual avg</div>
+                </div>
+            </div>
+
+            <!-- SOIL -->
+            <div class="sec-head"><span class="sec-lbl">Soil Analysis · SoilGrids v2 (0–5cm)</span>
+                <div class="sec-line"></div>
+            </div>
+            <div class="metrics-3" style="margin-bottom:10px">
+                <div class="mc mc-amber">
+                    <div class="mc-lbl">Soil pH</div>
+                    <div class="mc-val">{{ soil_ph }}</div>
+                    <div class="mc-sub">{{ soil_ph_class }}</div>
+                </div>
+                <div class="mc mc-cyan">
+                    <div class="mc-lbl">Texture Class</div>
+                    <div class="mc-val" style="font-size:18px;margin-top:3px">{{ soil_texture }}</div>
+                    <div class="mc-sub">Drainage: {{ soil_drainage }}</div>
+                </div>
+                <div
+                    class="mc {{ 'mc-green' if soil_nitrogen == 'High' else 'mc-amber' if soil_nitrogen == 'Moderate' else 'mc-red' }}">
+                    <div class="mc-lbl">Nitrogen Level</div>
+                    <div class="mc-val" style="font-size:20px;margin-top:3px">{{ soil_nitrogen }}</div>
+                    <div class="mc-sub">Plant-available N</div>
+                </div>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Property</th>
+                        <th>Value</th>
+                        <th>Interpretation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Clay Content</td>
+                        <td>{{ soil_clay }}%</td>
+                        <td><span class="pill pill-blue">{{ 'High plasticity' if soil_clay|float > 35 else 'Moderate' if
+                                soil_clay|float > 20 else 'Low clay' }}</span></td>
+                    </tr>
+                    <tr>
+                        <td>Sand Content</td>
+                        <td>{{ soil_sand }}%</td>
+                        <td><span class="pill pill-blue">{{ 'Sandy — fast draining' if soil_sand|float > 60 else 'Mixed
+                                composition' }}</span></td>
+                    </tr>
+                    <tr>
+                        <td>Silt Content</td>
+                        <td>{{ soil_silt }}%</td>
+                        <td><span class="pill pill-blue">{{ 'Silty — good water retention' if soil_silt|float > 40 else
+                                'Normal silt level' }}</span></td>
+                    </tr>
+                    <tr>
+                        <td>Organic Carbon</td>
+                        <td>{{ soil_oc }} g/kg</td>
+                        <td><span class="pill {{ 'pill-green' if soil_oc|float > 2 else 'pill-orange' }}">{{ 'Rich
+                                organic matter' if soil_oc|float > 2 else 'Moderate organic matter' }}</span></td>
+                    </tr>
+                    <tr>
+                        <td>Bulk Density</td>
+                        <td>{{ soil_bulk }} g/cm³</td>
+                        <td><span class="pill {{ 'pill-green' if soil_bulk|float < 1.4 else 'pill-orange' }}">{{ 'Low
+                                compaction' if soil_bulk|float < 1.4 else 'Moderate compaction' }}</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- CROP SUITABILITY -->
+            <div class="sec-head"><span class="sec-lbl">Crop Suitability</span>
+                <div class="sec-line"></div>
+            </div>
+            <div class="crops">
+                {% for crop, status in crop_suitability %}
+                <div class="crop-tag">
+                    <span style="color:{{ '#4ade80' if status == '✓' else '#fbbf24' }}">{{ status }}</span>
+                    {{ crop }}
+                </div>
+                {% else %}
+                <div style="font-size:13px;color:#4a6fa5">Insufficient data for crop suitability assessment.</div>
                 {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-        <div class="lu-na">Land-use data temporarily unavailable — OSM Overpass servers unreachable at time of report
-            generation.</div>
-        {% endif %}
+            </div>
 
-    </div>
+            <!-- INFRASTRUCTURE -->
+            <div class="sec-head"><span class="sec-lbl">Infrastructure & Accessibility · OSM</span>
+                <div class="sec-line"></div>
+            </div>
+            <div class="metrics" style="margin-bottom:10px">
+                <div class="mc mc-blue">
+                    <div class="mc-lbl">Highway</div>
+                    <div class="mc-val" style="font-size:22px">{{ nearest_highway if nearest_highway != None else '—'
+                        }}<span style="font-size:13px"> km</span></div>
+                    <div class="mc-sub">Nearest major road</div>
+                </div>
+                <div class="mc mc-red">
+                    <div class="mc-lbl">Hospital</div>
+                    <div class="mc-val" style="font-size:22px">{{ nearest_hospital if nearest_hospital != None else '—'
+                        }}<span style="font-size:13px"> km</span></div>
+                    <div class="mc-sub">Nearest medical facility</div>
+                </div>
+                <div class="mc mc-cyan">
+                    <div class="mc-lbl">Railway</div>
+                    <div class="mc-val" style="font-size:22px">{{ nearest_railway if nearest_railway != None else '—'
+                        }}<span style="font-size:13px"> km</span></div>
+                    <div class="mc-sub">Nearest station</div>
+                </div>
+                <div class="mc mc-purple">
+                    <div class="mc-lbl">Nearest City</div>
+                    <div class="mc-val" style="font-size:16px;margin-top:4px">{{ nearest_city or '—' }}</div>
+                    <div class="mc-sub">Road density: {{ road_density }} · {{ settlements }} settlements nearby</div>
+                </div>
+            </div>
 
-    <!-- FOOTER -->
-    <div class="footer">
-        <span class="footer-brand">DOCSENTINEL · AUTOMATED LAND INTELLIGENCE · {{ generated_date }}</span>
-        <span class="footer-src">Sentinel-2 · NASA GIBS · SRTM · NASA FIRMS · OpenStreetMap · Nominatim</span>
-    </div>
+            <!-- INVESTMENT -->
+            <div class="sec-head"><span class="sec-lbl">Investment Intelligence</span>
+                <div class="sec-line"></div>
+            </div>
+            <div class="metrics-2" style="margin-bottom:10px">
+                <div
+                    class="mc {{ 'mc-green' if score_investment >= 70 else 'mc-amber' if score_investment >= 45 else 'mc-red' }}">
+                    <div class="mc-lbl">Investment Score</div>
+                    <div class="mc-val">{{ score_investment }}<span style="font-size:14px;color:#4a6fa5">/100</span>
+                    </div>
+                    <div class="mc-sub">Land development potential</div>
+                </div>
+                <div class="mc mc-blue">
+                    <div class="mc-lbl">Settlements Nearby</div>
+                    <div class="mc-val">{{ settlements }}</div>
+                    <div class="mc-sub">Within ~15km radius</div>
+                </div>
+            </div>
+            <div class="inv-grid">
+                <div class="inv-col pros">
+                    <div class="inv-col-title pros">Positive Factors</div>
+                    {% for p in investment_pros %}
+                    <div class="inv-item">{{ p }}</div>
+                    {% else %}
+                    <div style="font-size:12px;color:#4a6fa5">None identified</div>
+                    {% endfor %}
+                </div>
+                <div class="inv-col cons">
+                    <div class="inv-col-title cons">Risk Factors</div>
+                    {% for c in investment_cons %}
+                    <div class="inv-item">{{ c }}</div>
+                    {% else %}
+                    <div style="font-size:12px;color:#4a6fa5">None identified</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- LAND USE (OSM) -->
+            <div class="sec-head"><span class="sec-lbl">Land-Use Classification · OpenStreetMap</span>
+                <div class="sec-line"></div>
+            </div>
+            {% if osm_land_use %}
+            <table class="lu-table">
+                <thead>
+                    <tr>
+                        <th>Land Type</th>
+                        <th>Coverage</th>
+                        <th style="width:50%">Distribution</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for land_type, pct in osm_land_use.items() %}
+                    <tr>
+                        <td>{{ land_type | capitalize }}</td>
+                        <td class="lu-pct">{{ pct }}%</td>
+                        <td>
+                            <div class="bar-wrap">
+                                <div class="bar-fill" style="width:{{ pct }}%"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="lu-na">Land-use data temporarily unavailable — OSM Overpass servers unreachable at time of
+                report generation.</div>
+            {% endif %}
+
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <span class="footer-brand">DOCSENTINEL · AUTOMATED LAND INTELLIGENCE · {{ generated_date }}</span>
+            <span class="footer-src">Sentinel-2 · NASA GIBS · SRTM · NASA FIRMS · Open-Meteo · SoilGrids · OSM</span>
+        </div>
 
 </body>
 
