@@ -18,22 +18,37 @@ def fetch_elevation(cfg):
     all_points = [(lats[i], lons[j]) for i in range(GRID) for j in range(GRID)]
     elevations = []
 
+    import time
+
+    # Inside the batch loop, after a failed 429:
     for batch_start in range(0, len(all_points), 100):
         batch = all_points[batch_start:batch_start+100]
         locations = "|".join([f"{lat},{lon}" for lat, lon in batch])
-        r = requests.get(
-            "https://api.opentopodata.org/v1/srtm30m",
-            params={"locations": locations},
-            timeout=30
-        )
-        if r.status_code == 200:
-            results = r.json().get("results", [])
-            for res in results:
-                elev = res.get("elevation")
-                elevations.append(float(elev) if elev is not None else 0.0)
-            print(f"  Batch {batch_start//100 + 1}/{(len(all_points)+99)//100} done")
+
+        for attempt in range(3):  # retry on 429
+            r = requests.get(
+                "https://api.opentopodata.org/v1/srtm30m",
+                params={"locations": locations},
+                timeout=30
+            )
+            if r.status_code == 200:
+                results = r.json().get("results", [])
+                for res in results:
+                    elev = res.get("elevation")
+                    elevations.append(float(elev) if elev is not None else 0.0)
+                print(f"  Batch {batch_start//100 + 1}/{(len(all_points)+99)//100} done")
+                time.sleep(1)  # be polite to the free API
+                break
+            elif r.status_code == 429:
+                wait = 10 * (attempt + 1)
+                print(f"  Rate limited — waiting {wait}s before retry...")
+                time.sleep(wait)
+            else:
+                print(f"  Batch failed: HTTP {r.status_code}")
+                elevations.extend([0.0] * len(batch))
+                break
         else:
-            print(f"  Batch failed: HTTP {r.status_code}")
+            print(f"  Batch failed after 3 attempts — using zeros")
             elevations.extend([0.0] * len(batch))
 
     elev_grid = np.array(elevations[:GRID*GRID]).reshape(GRID, GRID)

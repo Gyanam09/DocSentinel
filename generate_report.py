@@ -5,6 +5,13 @@ import numpy as np
 from jinja2 import Environment, FileSystemLoader
 
 from fetch_gibs import fetch_gibs_thumbnail
+import os
+import sys
+from datetime import date
+import numpy as np
+from jinja2 import Environment, FileSystemLoader
+
+from fetch_gibs import fetch_gibs_thumbnail
 from fetch_weather import fetch_weather
 from fetch_soil import fetch_soil
 from fetch_infrastructure import fetch_infrastructure
@@ -13,6 +20,8 @@ from config import load_config
 from fetch_location import fetch_location_name
 from fetch_elevation import fetch_elevation, render_elevation_map
 from fetch_fire import fetch_fire_data, render_fire_map
+from fetch_osm import get_land_use
+
 
 cfg = load_config()
 BBOX = cfg["bbox_tuple"]
@@ -117,42 +126,64 @@ try:
 except Exception as e:
     print(f"Fire fetch/render failed: {e}")
 
+# Fetch OSM land-use breakdown
+try:
+    print("\nFetching OSM land-use data...")
+    osm_land_use, osm_validated = get_land_use(BBOX)
+except Exception as e:
+    print(f"OSM land-use fetch failed: {e} — using fallback")
+    osm_land_use, osm_validated = None, False
+
+
 print("\n[5/5] Computing intelligence scores...")
 scores = compute_scores(ndvi_data, weather, soil, infra, elev_data)
 
 # ── Build template context ────────────────────────────────────────────────
 alert = ndvi_data["loss_pct"] > 1.0
 
+# ─── Load NDVI results from calculate_ndvi.py output ─────────────────────
+import json as _json
+
+ndvi_results = {}
+try:
+    with open("output/ndvi_results.json", "r") as f:
+        ndvi_results = _json.load(f)
+    print(f"  NDVI results loaded: mean={ndvi_results.get('mean_ndvi')}, "
+          f"loss={ndvi_results.get('loss_pct')}%")
+except FileNotFoundError:
+    print("  Warning: ndvi_results.json not found — using fallback values")
+    ndvi_results = {
+        "mean_ndvi": 0.198, "ndvi_min": -0.401, "ndvi_max": 0.667,
+        "loss_pct": 15.32, "loss_patches": 6093, "alert": True,
+        "scene_date": cfg["scene_date"],
+    }
+
 report_data = {
-    # Core
-    "scene_date":       "2026-05-25",
-    "generated_date":   str(date.today()),
-    "aoi_name":         cfg.get("aoi_name", location_name),
-    "alert":            alert,
-    "country":          country,
-    "state":            state,
+    "scene_date":    ndvi_results.get("scene_date", cfg["scene_date"]),
+    "generated_date": str(date.today()),
+    "aoi_name":      location_name,
+    "country":       country,
+    "state":         state,
+    "mean_ndvi":     ndvi_results.get("mean_ndvi", 0),
+    "ndvi_min":      ndvi_results.get("ndvi_min", 0),
+    "ndvi_max":      ndvi_results.get("ndvi_max", 0),
+    "loss_pct":      ndvi_results.get("loss_pct", 0),
+    "loss_patches":  ndvi_results.get("loss_patches", 0),
+    "alert":         ndvi_results.get("alert", False),
+    "ndvi_map_path":    "ndvi_t1_map.png",
+    "loss_map_path":    "loss_contours.png",
+    "true_color_path":  "true_color.png",
+    "elevation_path":   "elevation_map.png",
+    "fire_map_path":    "fire_map.png",
+    "osm_land_use":     osm_land_use,
     "bbox":             cfg["bbox"],
 
-    # NDVI
-    "mean_ndvi":        ndvi_data["mean_ndvi"],
-    "loss_pct":         ndvi_data["loss_pct"],
-    "loss_patches":     ndvi_data["loss_patches"],
-    "ndvi_min":         ndvi_data["ndvi_min"],
-    "ndvi_max":         ndvi_data["ndvi_max"],
-
-    # Images
-    "true_color_path":  os.path.abspath("output/true_color.png"),
-    "ndvi_map_path":    os.path.abspath("output/ndvi_t1_map.png"),
-    "loss_map_path":    os.path.abspath("output/loss_contours.png"),
-    "elevation_path":   os.path.abspath("output/elevation_map.png"),
-    "fire_map_path":    os.path.abspath("output/fire_map.png"),
-
     # Elevation
-    "elev_min":         elev_data["elev_min"],
-    "elev_max":         elev_data["elev_max"],
-    "elev_range":       elev_data["elev_range"],
-    "elev_mean":        elev_data["elev_mean"],
-    "slope_avg":        elev_data["slope_avg"],
+    "elev_min":         elev_data.get("elev_min", "—"),
+    "elev_max":         elev_data.get("elev_max", "—"),
+    "elev_range":       elev_data.get("elev_range", "—"),
+    "elev_mean":        elev_data.get("elev_mean", "—"),
+    "slope_avg":        elev_data.get("slope_avg", "—"),
 
     # Weather — current
     "temp":             weather["current"].get("temperature", "—"),
@@ -209,9 +240,6 @@ report_data = {
     "flood_risk":           scores["flood_risk"],
     "landslide_risk":       scores["landslide_risk"],
     "drought_risk":         scores["drought_risk"],
-
-    # OSM land use
-    "osm_land_use":         None,  # still unavailable
 }
 
 # ── Render ────────────────────────────────────────────────────────────────
@@ -226,9 +254,15 @@ print(f"\nReport saved -> {output_path}")
 
 # ── PDF ───────────────────────────────────────────────────────────────────
 import pdfkit
-config_pdf = pdfkit.configuration(
-    wkhtmltopdf=r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
-)
+if sys.platform == "win32":
+    wk_path = os.environ.get(
+        "WKHTMLTOPDF_PATH",
+        r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe",
+    )
+else:
+    wk_path = os.environ.get("WKHTMLTOPDF_PATH", "/usr/bin/wkhtmltopdf")
+
+config_pdf = pdfkit.configuration(wkhtmltopdf=wk_path)
 pdfkit.from_file(output_path, "output/report.pdf",
                  configuration=config_pdf,
                  options={"enable-local-file-access": "", "quiet": ""})

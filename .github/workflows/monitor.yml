@@ -4,11 +4,13 @@ on:
   schedule:
     - cron: "0 3 1 * *"
   workflow_dispatch:
+  repository_dispatch:
+    types: [run_pipeline]
 
 jobs:
   monitor:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     steps:
       - name: Checkout repository
@@ -35,6 +37,19 @@ jobs:
           echo "CDSE_USERNAME=${{ secrets.CDSE_USERNAME }}" >> .env
           echo "CDSE_PASSWORD=${{ secrets.CDSE_PASSWORD }}" >> .env
           echo "RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}" >> .env
+          echo "FIRMS_MAP_KEY=${{ secrets.FIRMS_MAP_KEY }}" >> .env
+
+      - name: Apply requested coordinates
+        if: github.event_name == 'repository_dispatch'
+        run: |
+          python run.py \
+            "${{ github.event.client_payload.min_lat }}" \
+            "${{ github.event.client_payload.max_lat }}" \
+            "${{ github.event.client_payload.min_lon }}" \
+            "${{ github.event.client_payload.max_lon }}" \
+            --scene-date "${{ github.event.client_payload.scene_date }}" \
+            --client-email "${{ github.event.client_payload.client_email }}" \
+            --config-only
 
       - name: Download Sentinel-2 bands
         run: python download_bands.py
@@ -48,10 +63,28 @@ jobs:
       - name: Fetch OSM land-use context
         run: python fetch_osm.py
 
+      - name: Fetch elevation data
+        run: python fetch_elevation.py
+
+      - name: Fetch fire data
+        run: python fetch_fire.py
+
+      - name: Fetch weather and climate
+        run: python fetch_weather.py
+
+      - name: Fetch soil intelligence
+        run: python fetch_soil.py
+
+      - name: Fetch infrastructure data
+        run: python fetch_infrastructure.py
+
       - name: Generate HTML and PDF report
         run: python generate_report.py
         env:
           WKHTMLTOPDF_PATH: /usr/bin/wkhtmltopdf
+
+      - name: Generate 3D terrain viewer
+        run: python generate_3d_terrain.py
 
       - name: Send report via Resend
         run: python send_report.py
@@ -67,4 +100,8 @@ jobs:
             output/ndvi_t1_map.png
             output/loss_contours.png
             output/true_color.png
+            output/elevation_map.png
+            output/fire_map.png
+            output/terrain_3d.html
+            output/docsentinel_report.zip
           retention-days: 30

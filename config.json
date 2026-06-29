@@ -1,15 +1,14 @@
 {
-    "aoi_name": "Bhopal Test AOI",
-    "bbox": {
-        "min_lat": 23.15,
-        "min_lon": 77.35,
-        "max_lat": 23.35,
-        "max_lon": 77.55
-    },
-    "scene_date": "2026-05-25",
-    "client_email": "aisebanai@gmail.com",
-    "ndvi_loss_threshold": -0.15,
-    "cloud_cover_max": 5.0,
-    "zoom_level": 9,
-    "elevation_grid_size": 50
+  "bbox": {
+    "min_lat": 23.143861,
+    "max_lat": 23.233951,
+    "min_lon": 75.732765,
+    "max_lon": 75.830773
+  },
+  "scene_date": "2026-06-27",
+  "client_email": "aisebanai@gmail.com",
+  "ndvi_loss_threshold": -0.15,
+  "cloud_cover_max": 5.0,
+  "zoom_level": 9,
+  "elevation_grid_size": 50
 }

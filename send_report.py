@@ -1,4 +1,4 @@
-import os
+﻿import os
 import base64
 import io
 import re
@@ -13,21 +13,30 @@ from config import load_config
 Image.MAX_IMAGE_PIXELS = None
 load_dotenv()
 
-# ─── Config ───────────────────────────────────────────────────────────────
+# â”€â”€â”€ Config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 resend.api_key = os.getenv("RESEND_API_KEY")
 cfg = load_config()
 
+import json as _json
+
+ndvi_results = {}
+try:
+    with open("output/ndvi_results.json", "r") as f:
+        ndvi_results = _json.load(f)
+except FileNotFoundError:
+    ndvi_results = {"mean_ndvi": 0, "loss_pct": 0, "loss_patches": 0, "alert": False}
+
 report_data = {
-    "client_email": cfg["client_email"],
-    "aoi_name":     cfg.get("aoi_name", "AOI"),
-    "scene_date":   cfg["scene_date"],
-    "mean_ndvi":    0.198,
-    "loss_pct":     15.32,
-    "loss_patches": 6093,
-    "alert":        True,
+    "client_email":  cfg["client_email"],
+    "aoi_name":      cfg.get("aoi_name", "AOI"),
+    "scene_date":    cfg["scene_date"],
+    "mean_ndvi":     ndvi_results.get("mean_ndvi", 0),
+    "loss_pct":      ndvi_results.get("loss_pct", 0),
+    "loss_patches":  ndvi_results.get("loss_patches", 0),
+    "alert":         ndvi_results.get("alert", False),
 }
 
-# ─── Compress images ──────────────────────────────────────────────────────
+# â”€â”€â”€ Compress images â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 def compress_image(path, max_width=800):
     img = Image.open(path)
     if img.width > max_width:
@@ -54,9 +63,12 @@ for fname, outname in [
         f.write(compress_image(fname).read())
 print("Compressed maps saved.")
 
-# ─── Regenerate compressed PDF ────────────────────────────────────────────
+# â”€â”€â”€ Regenerate compressed PDF â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 if sys.platform == "win32":
-    wk_path = r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
+    wk_path = os.environ.get(
+        "WKHTMLTOPDF_PATH",
+        r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe",
+    )
 else:
     wk_path = os.environ.get("WKHTMLTOPDF_PATH", "/usr/bin/wkhtmltopdf")
 
@@ -82,7 +94,7 @@ print(f"Email PDF saved -> {email_pdf}")
 with open(email_pdf, "rb") as f:
     pdf_base64 = base64.b64encode(f.read()).decode("utf-8")
 
-# ─── Make HTML self-contained (embed images as base64) ───────────────────
+# â”€â”€â”€ Make HTML self-contained (embed images as base64) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 def embed_images(html_path):
     with open(html_path, "r", encoding="utf-8") as f:
         html = f.read()
@@ -114,7 +126,7 @@ report_standalone = embed_images("output/report.html")
 with open("output/report_standalone.html", "w", encoding="utf-8") as f:
     f.write(report_standalone)
 
-# ─── Create ZIP ───────────────────────────────────────────────────────────
+# â”€â”€â”€ Create ZIP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 zip_path = "output/docsentinel_report.zip"
 with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
     zf.write("output/report_standalone.html", "report.html")
@@ -126,7 +138,7 @@ print(f"ZIP created -> {zip_path} ({zip_size_mb:.1f} MB)")
 with open(zip_path, "rb") as f:
     zip_base64 = base64.b64encode(f.read()).decode("utf-8")
 
-# ─── Build attachments list ───────────────────────────────────────────────
+# â”€â”€â”€ Build attachments list â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 attachments = [{
     "filename": f"DocSentinel_Report_{report_data['scene_date']}.pdf",
     "content": pdf_base64,
@@ -141,7 +153,7 @@ if zip_size_mb < 5:
 else:
     print(f"ZIP too large ({zip_size_mb:.1f}MB) - sending PDF only")
 
-# ─── Email content ────────────────────────────────────────────────────────
+# â”€â”€â”€ Email content â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 links_html = """
 <div style="margin:20px 0;padding:14px 16px;background:#0d2137;border-radius:8px;
             border-left:3px solid #38bdf8;">
@@ -150,7 +162,7 @@ links_html = """
   <table style="width:100%;border-collapse:collapse;">
     <tr>
       <td style="padding:6px 0;">
-        <span style="font-size:13px;color:#94a3b8;">📊 Full Analysis Report</span>
+        <span style="font-size:13px;color:#94a3b8;">Full analysis report</span>
       </td>
       <td style="text-align:right;padding:6px 0;">
         <span style="font-size:12px;color:#38bdf8;font-family:monospace;">
@@ -159,7 +171,7 @@ links_html = """
     </tr>
     <tr>
       <td style="padding:6px 0;">
-        <span style="font-size:13px;color:#94a3b8;">🌄 Interactive 3D Terrain</span>
+        <span style="font-size:13px;color:#94a3b8;">Interactive terrain viewer</span>
       </td>
       <td style="text-align:right;padding:6px 0;">
         <span style="font-size:12px;color:#38bdf8;font-family:monospace;">
@@ -171,7 +183,7 @@ links_html = """
 """
 
 if report_data["alert"]:
-    subject = f"⚠ ALERT: Canopy Loss Detected — {report_data['aoi_name']}"
+    subject = f"ALERT: Canopy Loss Detected - {report_data['aoi_name']}"
     intro = f"""
     <p style="font-size:14px;color:#e2e8f0;line-height:1.7;">
       A significant vegetation change has been detected on your monitored land parcel.
@@ -190,7 +202,7 @@ if report_data["alert"]:
     </p>
     """
 else:
-    subject = f"✓ Monthly Report — {report_data['aoi_name']}"
+    subject = f"Monthly Report - {report_data['aoi_name']}"
     intro = f"""
     <p style="font-size:14px;color:#e2e8f0;line-height:1.7;">
       Your monthly land monitoring report is ready. No significant change detected.
@@ -217,13 +229,13 @@ email_html = f"""
   {intro}
   <p style="font-size:12px;color:#1e3a5f;border-top:1px solid #1e3a5f;
              padding-top:16px;margin-top:32px;">
-    Powered by Sentinel-2 (ESA Copernicus) · NASA GIBS · SRTM · DocSentinel
+    Powered by Sentinel-2 (ESA Copernicus), NASA GIBS, SRTM, and DocSentinel
   </p>
 </body>
 </html>
 """
 
-# ─── Send ─────────────────────────────────────────────────────────────────
+# â”€â”€â”€ Send â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 print(f"Sending report to {report_data['client_email']}...")
 
 params = {
@@ -236,3 +248,4 @@ params = {
 
 response = resend.Emails.send(params)
 print(f"Email sent! ID: {response['id']}")
+

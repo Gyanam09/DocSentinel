@@ -23,6 +23,10 @@ def fetch_gibs_thumbnail(bbox, cfg=None, output_path="output/true_color.png", zo
     Fetch a true-color MODIS composite tile from NASA GIBS.
     bbox: (min_lat, min_lon, max_lat, max_lon)
     """
+    if os.path.exists(output_path):
+        print(f"  True color image {output_path} already exists. Skipping NASA GIBS MODIS fetch.")
+        return output_path
+
     min_lat, min_lon, max_lat, max_lon = bbox
 
     # Get tile range
